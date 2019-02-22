@@ -3,20 +3,20 @@ const config = require('../config');
 
 module.exports = class extends Event {
   async run(data) {
-    if (
-      data.t !== 'MESSAGE_REACTION_ADD' ||
-      data.d.channel_id !== config.submitChannelID ||
-      !config.approvedUserIDs.includes(data.d.user_id)
-    )
-      return null;
-    console.log(data);
-
     const reaction = data.d;
 
-    const channel = this.client.channels.get(data.d.channel_id);
+    if (
+      data.t !== 'MESSAGE_REACTION_ADD' ||
+      reaction.channel_id !== config.submitChannelID ||
+      !config.approvedUserIDs.includes(reaction.user_id)
+    )
+      return null;
+
+    // Get the channel from the discord then fetch the message from that channel. If the message can not be fetched cancel out
+    const channel = this.client.channels.get(reaction.channel_id);
 
     const message = await channel.messages
-      .fetch(data.d.message_id)
+      .fetch(reaction.message_id)
       .catch(() => null);
     if (!message) return null;
 
