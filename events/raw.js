@@ -6,7 +6,7 @@ module.exports = class extends Event {
     if (
       data.t !== 'MESSAGE_REACTION_ADD' ||
       data.d.channel_id !== config.submitChannelID ||
-      config.approvedUserIDs.includes(data.d.user_id)
+      !config.approvedUserIDs.includes(data.d.user_id)
     )
       return null;
     console.log(data);
