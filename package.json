@@ -1,0 +1,23 @@
+{
+  "name": "vainglory-news-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Skillz4Killz/vainglory-news-bot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Skillz4Killz/vainglory-news-bot/issues"
+  },
+  "homepage": "https://github.com/Skillz4Killz/vainglory-news-bot#readme",
+  "dependencies": {
+    "discord.js": "discordjs/discord.js",
+    "klasa": "dirigeants/klasa#master"
+  }
+}
