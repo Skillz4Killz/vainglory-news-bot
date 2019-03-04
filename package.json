@@ -4,7 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node production/src/index",
+    "build": "tsc",
+    "dev": "npm run build && npm run start",
+    "reset": "rm -R production && npm run dev"
   },
   "repository": {
     "type": "git",
@@ -17,7 +21,14 @@
   },
   "homepage": "https://github.com/Skillz4Killz/vainglory-news-bot#readme",
   "dependencies": {
+    "@types/node": "^11.10.4",
+    "@types/node-fetch": "^2.1.6",
     "discord.js": "discordjs/discord.js",
-    "klasa": "dirigeants/klasa#master"
+    "klasa": "dirigeants/klasa",
+    "node-fetch": "^2.3.0"
+  },
+  "devDependencies": {
+    "tslint": "^5.13.1",
+    "typescript": "^3.3.3333"
   }
 }
