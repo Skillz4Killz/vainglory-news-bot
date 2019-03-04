@@ -1,6 +1,6 @@
-config.js
-config.ts
 production/
+config.ts
+config.js
 
 # Logs
 logs

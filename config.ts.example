@@ -1,0 +1,9 @@
+export default {
+  botToken: '',
+  submitChannelID: '548555325956161547',
+  approvedUserIDs: [
+    '130136895395987456',
+    '63019563008135168',
+    '142961302665560064',
+  ],
+};
