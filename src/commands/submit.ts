@@ -1,8 +1,7 @@
 import { Command, CommandStore, KlasaClient, KlasaMessage } from 'klasa';
 import { TextChannel, MessageEmbed, Message } from 'discord.js';
 import { UserSettings } from '../lib/types/klasa';
-
-const submissionChannelID = '548555325956161547';
+import config from '../../config';
 
 const questions = [
   {
@@ -12,6 +11,7 @@ const questions = [
   {
     text: 'What would you like to add as the category for this submission?',
     name: 'category',
+    options: ['esports', 'art', 'guides', 'tools'],
   },
   {
     text: 'What would you like to add as the link for this submission?',
@@ -25,13 +25,6 @@ const questions = [
     text: 'What would you like to add as the title for this submission?',
     name: 'title',
   },
-];
-
-const allowedChannels = [
-  { name: 'art', id: '551475973908856882' },
-  { name: 'guides', id: '551475957773631523' },
-  { name: 'esports', id: '551476016435036160' },
-  { name: 'tools', id: '551476033337950227' },
 ];
 
 const REACTIONS = {
@@ -72,14 +65,17 @@ export default class extends Command {
         continue;
       }
 
-      const response = await this.ask(message, question.text);
+      const response = await this.ask(message, question.text, question.options);
       if (!response) return null;
 
-      responses[question.name] = response.content;
+      responses[question.name] =
+        question.name === 'image' && response.attachments.size
+          ? response.attachments.first().url
+          : response.content;
     }
 
     const channel = message.guild.channels.get(
-      submissionChannelID
+      config.submitChannelID
     ) as TextChannel;
     if (!channel) return null;
 
@@ -92,30 +88,17 @@ export default class extends Command {
       .setImage(responses.image)
       .setTitle(responses.title)
       .setTimestamp();
-
     const sentMessage = (await channel.send(responseEmbed)) as Message;
     if (sentMessage)
       for (const reaction of REACTIONS.APPROVE_DENY)
         await sentMessage.react(reaction);
-
-    const privateChannel = message.guild.channels.get(
-      allowedChannels.find((c) => c.name === responses.category).id
-    ) as TextChannel;
-    if (privateChannel) {
-      const sentPrivateMessage = (await privateChannel.send(
-        responseEmbed
-      )) as Message;
-      if (sentPrivateMessage)
-        for (const reaction of REACTIONS.APPROVE_DENY)
-          await sentPrivateMessage.react(reaction);
-    }
 
     return message.send(
       'You have successfully sent in your submission. To view your submission please check out <#548555325956161547>'
     );
   }
 
-  async ask(message: KlasaMessage, question: string) {
+  async ask(message: KlasaMessage, question: string, options?: string[]) {
     const embed = new MessageEmbed()
       .setColor('RANDOM')
       .setAuthor(message.member.displayName, message.author.displayAvatarURL())
@@ -124,7 +107,9 @@ export default class extends Command {
 
     await message.channel.send(embed);
     const messages = await message.channel.awaitMessages(
-      (response: KlasaMessage) => response.author === message.author,
+      (response: KlasaMessage) =>
+        response.author === message.author &&
+        (options && options.length ? options.includes(message.content) : true),
       { time: 300000, max: 1 }
     );
     if (messages.size === 0) return null;

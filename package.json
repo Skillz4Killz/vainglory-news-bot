@@ -25,6 +25,7 @@
     "@types/node-fetch": "^2.1.6",
     "discord.js": "discordjs/discord.js",
     "klasa": "dirigeants/klasa",
+    "mongodb": "^3.1.13",
     "node-fetch": "^2.3.0"
   },
   "devDependencies": {

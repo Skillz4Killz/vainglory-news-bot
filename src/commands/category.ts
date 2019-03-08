@@ -13,7 +13,7 @@ export default class extends Command {
       aliases: [],
       permissionLevel: 0,
       description:
-        'Save an category to the database so you dont have to provide an author every time you submit content.',
+        'Save an category to the database so you dont have to provide a category every time you submit content.',
       quotedStringSupport: true,
       usage: '[art|guides|esports|tools]',
       // usageDelim: ' ',
