@@ -9,7 +9,16 @@ const questions = [
     name: 'authorName',
   },
   {
-    text: 'What would you like to add as the category for this submission?',
+    text: [
+      'What would you like to add as the category for this submission?',
+      '',
+      '**Valid Categories:**',
+      '',
+      '`Art:` If the content is fanart or memes related to Vainglory',
+      '`Guides:` If the content is a guide to help players learn something including articles or videos.',
+      '`Esports:` If you are promoting a community tournament supported by SEMC',
+      '`Tools:` If you are submitting a cool new project that should be listed for players. (Not to be used for news about those projects)',
+    ].join('\n'),
     name: 'category',
     options: ['esports', 'art', 'guides', 'tools'],
   },
@@ -30,7 +39,8 @@ const questions = [
 const REACTIONS = {
   CHECK: '✅',
   STOP: '🛑',
-  APPROVE_DENY: ['✅', '🛑'],
+  STAR: '⭐',
+  APPROVE_DENY_FAVORITE: ['✅', '🛑', '⭐'],
 };
 
 export default class extends Command {
@@ -46,6 +56,7 @@ export default class extends Command {
       permissionLevel: 0,
       description: 'Submit your content to be processed.',
       quotedStringSupport: true,
+      cooldown: 120,
       // usage: '',
       // usageDelim: ' ',
     });
@@ -65,9 +76,21 @@ export default class extends Command {
         continue;
       }
 
-      const response = await this.ask(message, question.text, question.options);
+      const response = (await this.ask(
+        message,
+        question.text,
+        question.options
+      )) as Message;
       if (!response) return null;
 
+      if (question.name === 'title' && !response.content)
+        throw new MessageEmbed()
+          .setAuthor(
+            message.member.displayName,
+            message.author.displayAvatarURL()
+          )
+          .setDescription('Invalid response given for the title')
+          .setColor('RED');
       responses[question.name] =
         question.name === 'image' && response.attachments.size
           ? response.attachments.first().url
@@ -90,7 +113,7 @@ export default class extends Command {
       .setTimestamp();
     const sentMessage = (await channel.send(responseEmbed)) as Message;
     if (sentMessage)
-      for (const reaction of REACTIONS.APPROVE_DENY)
+      for (const reaction of REACTIONS.APPROVE_DENY_FAVORITE)
         await sentMessage.react(reaction);
 
     return message.send(
@@ -103,17 +126,29 @@ export default class extends Command {
       .setColor('RANDOM')
       .setAuthor(message.member.displayName, message.author.displayAvatarURL())
       .setDescription(question)
-      .setFooter('You have 5 minutes to reply.');
+      .setFooter(
+        'You have 5 minutes to reply. To cancel please type [C]ancel.'
+      );
 
     await message.channel.send(embed);
     const messages = await message.channel.awaitMessages(
       (response: KlasaMessage) =>
         response.author === message.author &&
-        (options && options.length ? options.includes(message.content) : true),
+        (options && options.length ? options.includes(response.content) : true),
       { time: 300000, max: 1 }
     );
     if (messages.size === 0) return null;
     const responseMessage = messages.first();
+    if (
+      ['cancel', 'c', 'n', 'no'].includes(responseMessage.content.toLowerCase())
+    ) {
+      await message.channel.send(
+        embed
+          .setDescription('You have cancelled your submission.')
+          .setFooter('')
+      );
+      return null;
+    }
 
     return responseMessage || null;
   }

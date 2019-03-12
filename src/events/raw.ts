@@ -1,11 +1,13 @@
 import { Event } from 'klasa';
 import config from '../../config';
 import { Message, TextChannel } from 'discord.js';
+import fetch from 'node-fetch';
 
 const REACTIONS = {
   CHECK: '✅',
   STOP: '🛑',
-  APPROVE_DENY: ['✅', '🛑'],
+  STAR: '⭐',
+  APPROVE_DENY_FAVORITE: ['✅', '🛑', '⭐'],
 };
 
 export default class extends Event {
@@ -16,7 +18,7 @@ export default class extends Event {
     if (
       data.t !== 'MESSAGE_REACTION_ADD' ||
       reaction.channel_id !== config.submitChannelID ||
-      !REACTIONS.APPROVE_DENY.includes(reaction.emoji.name)
+      !REACTIONS.APPROVE_DENY_FAVORITE.includes(reaction.emoji.name)
     )
       return null;
 
@@ -43,9 +45,9 @@ export default class extends Event {
 
     // Find the channel to send to based on if the message was approved or rejected and send to that channel
     const channelID =
-      REACTIONS.CHECK === reaction.emoji.name
-        ? config.approvedChannelID
-        : config.rejectedChannelID;
+      REACTIONS.STOP === reaction.emoji.name
+        ? config.rejectedChannelID
+        : config.approvedChannelID;
     const approvedOrRejectedChannel = channel.guild.channels.get(
       channelID
     ) as TextChannel;
@@ -57,14 +59,17 @@ export default class extends Event {
     )) as Message;
     // If the message was moved delete it
     if (messageMoved && message.deletable) message.delete();
+    // Rejected so dont add to databse
+    if (REACTIONS.STOP === reaction.emoji.name) return null;
 
-    // Create a placeholder and check if the JSON can be parsed in a try catch to avoid any errors from throwing and handle it properly. If json is valid assign it to the placeholder
     const embed = message.embeds[0];
     const json = {
       messageID: messageMoved.id,
       channelID,
-      author: embed.author.name || '',
+      author: embed.description || '',
       category: embed.footer.text || '',
+      featured: REACTIONS.STAR === reaction.emoji.name,
+      path: embed.footer.text || '',
       image: (embed.image && embed.image.proxyURL) || '',
       link: embed.url || '',
       title: embed.title || '',
@@ -76,8 +81,14 @@ export default class extends Event {
       'posts',
       message.id
     );
-    if (!existsInDB)
+    if (!existsInDB) {
+      // Update the database with the new data
       await this.client.providers.default.create('posts', message.id, json);
+      // Tell netlify to rebuild the website
+      await fetch(config.netlifyUpdateWebhook, {
+        method: 'POST',
+      });
+    }
 
     return null;
   }

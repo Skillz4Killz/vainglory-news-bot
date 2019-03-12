@@ -8,7 +8,8 @@
     "start": "node production/src/index",
     "build": "tsc",
     "dev": "npm run build && npm run start",
-    "reset": "rm -R production && npm run dev"
+    "reset": "rm -R production && npm run dev",
+    "clean": "rm -r -f node_modules && rm yarn.lock && yarn"
   },
   "repository": {
     "type": "git",
@@ -23,10 +24,12 @@
   "dependencies": {
     "@types/node": "^11.10.4",
     "@types/node-fetch": "^2.1.6",
+    "@types/xml2js": "^0.4.3",
     "discord.js": "discordjs/discord.js",
     "klasa": "dirigeants/klasa",
     "mongodb": "^3.1.13",
-    "node-fetch": "^2.3.0"
+    "node-fetch": "^2.3.0",
+    "rss-parser": "^3.6.3"
   },
   "devDependencies": {
     "tslint": "^5.13.1",

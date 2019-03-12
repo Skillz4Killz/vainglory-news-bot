@@ -25,7 +25,7 @@ module.exports = class extends Provider {
       {
         host: 'localhost',
         port: 27017,
-        db: 'klasa',
+        db: 'prod',
         options: {},
       },
       this.client.options.providers.mongodb
