@@ -6,6 +6,7 @@ KlasaClient.defaultUserSchema
   .add('category', 'string');
 
 new Client({
+  commandLogging: true,
   commandEditing: true,
   prefix: '!',
   readyMessage: () => `Bot is Ready!`,
