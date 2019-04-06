@@ -134,7 +134,7 @@ export default class extends Command {
     const messages = await message.channel.awaitMessages(
       (response: KlasaMessage) =>
         response.author === message.author &&
-        (options && options.length ? options.includes(response.content) : true),
+        (options && options.length ? options.includes(response.content.toLowerCase()) : true),
       { time: 300000, max: 1 }
     );
     if (messages.size === 0) return null;
