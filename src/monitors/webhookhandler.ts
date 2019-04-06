@@ -15,8 +15,8 @@ export default class extends Monitor {
   ) {
     super(client, store, file, directory, {
       ignoreWebhooks: false,
-      ignoreOthers: false,
-      ignoreBots: false,
+      // ignoreOthers: false,
+      // ignoreBots: false,
     });
   }
 
