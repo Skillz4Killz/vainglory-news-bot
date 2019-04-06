@@ -15,12 +15,14 @@ export default class extends Monitor {
   ) {
     super(client, store, file, directory, {
       ignoreWebhooks: false,
+      ignoreOthers: false,
+      ignoreBots: false,
     });
   }
 
   async run(message: KlasaMessage): Promise<boolean | null> {
     // Don't want the monitor doing anything on any channel except the #pending-approval channel
-		if (message.channel.id !== config.submitChannelID) return null;
+    if (message.channel.id !== config.submitChannelID) return null;
     // Await so that the reactions are always in a nice clean order
     for (const reaction of REACTIONS)
       await message
