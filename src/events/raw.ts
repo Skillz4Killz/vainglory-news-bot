@@ -67,7 +67,7 @@ export default class extends Event {
       messageID: messageMoved.id,
       channelID,
       author: embed.description || '',
-      category: embed.footer.text || '',
+      category: embed.footer.text ? embed.footer.text.toLowerCase() : '',
       featured: REACTIONS.STAR === reaction.emoji.name,
       path: embed.footer.text || '',
       image: (embed.image && embed.image.proxyURL) || '',
