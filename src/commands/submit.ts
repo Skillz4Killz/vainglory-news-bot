@@ -31,7 +31,7 @@ const questions = [
     name: 'image',
   },
   {
-    text: 'What would you like to add as the title for this submission?',
+    text: 'What would you like to add as the title for this submission? MAX 30 CHARACTERS WILL BE USED ON WEBSITE!',
     name: 'title',
   },
 ];
