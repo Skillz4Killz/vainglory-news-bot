@@ -69,7 +69,7 @@ export default class extends Event {
       author: embed.description || '',
       category: embed.footer.text ? embed.footer.text.toLowerCase() : '',
       featured: REACTIONS.STAR === reaction.emoji.name,
-      path: embed.footer.text || '',
+      path: embed.footer.text ? embed.footer.text.toLowerCase() : '',
       image: (embed.image && embed.image.proxyURL) || '',
       link: embed.url || '',
       title: embed.title || '',
