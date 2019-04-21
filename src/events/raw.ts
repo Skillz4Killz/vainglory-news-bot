@@ -72,7 +72,7 @@ export default class extends Event {
       path: embed.footer.text ? embed.footer.text.toLowerCase() : '',
       image: (embed.image && embed.image.proxyURL) || '',
       link: embed.url || '',
-      title: embed.title || '',
+      title: embed.title ? embed.title.substring(0, 30) : '',
       timestamp: Date.now(),
     };
 
