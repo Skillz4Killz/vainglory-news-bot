@@ -74,6 +74,7 @@ export default class extends Event {
       link: embed.url || '',
       title: embed.title ? embed.title.substring(0, 30) : '',
       timestamp: Date.now(),
+      stream: false
     };
 
     // First check if this message already has a object in the database and cancel OR create a post in the posts table.
