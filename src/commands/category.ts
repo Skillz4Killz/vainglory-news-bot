@@ -15,7 +15,7 @@ export default class extends Command {
       description:
         'Save an category to the database so you dont have to provide a category every time you submit content.',
       quotedStringSupport: true,
-      usage: '[art|guides|esports|tools]',
+      usage: '[art|guides|entertainment|tools]',
       // usageDelim: ' ',
     });
   }

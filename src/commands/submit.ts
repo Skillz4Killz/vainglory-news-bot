@@ -16,11 +16,11 @@ const questions = [
       '',
       '`Art:` If the content is fanart or memes related to Vainglory',
       '`Guides:` If the content is a guide to help players learn something including articles or videos.',
-      '`Esports:` If you are promoting a community tournament supported by SEMC',
+      '`Entertainment:` If you are promoting video content or a tournament supported by SEMC',
       '`Tools:` If you are submitting a cool new project that should be listed for players. (Not to be used for news about those projects)',
     ].join('\n'),
     name: 'category',
-    options: ['esports', 'art', 'guides', 'tools'],
+    options: ['Entertainment', 'art', 'guides', 'tools'],
   },
   {
     text: 'What would you like to add as the link for this submission?',
