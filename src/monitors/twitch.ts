@@ -31,6 +31,9 @@ export default class extends Monitor {
       await fetch(config.netlifyUpdateWebhook, {
         method: 'POST',
       });
+
+      this.client.emit('log', `Twitch streamer being removed. ${embed.author.name}`);
+      return null;
     }
 
     // Add the streamer to the page
@@ -55,6 +58,7 @@ export default class extends Monitor {
       method: 'POST',
     });
 
+    this.client.emit('log', `Twitch streamer went live. ${embed.author.name}`)
     return null;
   }
 }
