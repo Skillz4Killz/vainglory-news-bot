@@ -1,5 +1,4 @@
-// Add reactions to the messages sent through webhooks When users submit content from a google form
-// or the website itself in the future it will be sent to the channel with a webhook.
+// Add reactions to the messages sent to all messages sent in the #pending-approval channel
 
 import { KlasaClient, KlasaMessage, MonitorStore, Monitor } from 'klasa';
 import config from '../../config';
@@ -15,8 +14,9 @@ export default class extends Monitor {
   ) {
     super(client, store, file, directory, {
       ignoreWebhooks: false,
-      // ignoreOthers: false,
-      // ignoreBots: false,
+      ignoreOthers: false,
+      ignoreBots: false,
+      ignoreSelf: false,
     });
   }
 
@@ -31,7 +31,7 @@ export default class extends Monitor {
     // The monitor has ran successfully
     return this.client.emit(
       'log',
-      'Successfully ran the Add Reactions monitor.'
+      `Successfully ran the Add Reactions monitor on message ID ${message.id}`
     );
   }
 }

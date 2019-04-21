@@ -36,13 +36,6 @@ const questions = [
   },
 ];
 
-const REACTIONS = {
-  CHECK: '✅',
-  STOP: '🛑',
-  STAR: '⭐',
-  APPROVE_DENY_FAVORITE: ['✅', '🛑', '⭐'],
-};
-
 export default class extends Command {
   constructor(
     client: KlasaClient,
@@ -111,11 +104,9 @@ export default class extends Command {
       .setImage(responses.image)
       .setTitle(responses.title)
       .setTimestamp();
-    const sentMessage = (await channel.send(responseEmbed)) as Message;
-    if (sentMessage)
-      for (const reaction of REACTIONS.APPROVE_DENY_FAVORITE)
-        await sentMessage.react(reaction);
+    const sentMessage = (await channel.send(responseEmbed).catch(() => null)) as Message | null;
 
+    if (!sentMessage) return null;
     return message.send(
       'You have successfully sent in your submission. To view your submission please check out <#548555325956161547>'
     );
