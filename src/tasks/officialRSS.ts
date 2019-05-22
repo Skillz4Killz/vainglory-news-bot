@@ -3,6 +3,11 @@ import * as Parser from 'rss-parser';
 import fetch from 'node-fetch';
 import config from '../../config';
 
+const defaultImages = [
+  'https://i.imgur.com/vB9FrA0.jpg',
+  'https://i.imgur.com/qz14h4k.jpg',
+];
+
 export default class extends Task {
   async run(): Promise<null> {
     const parser = new Parser();
@@ -10,50 +15,67 @@ export default class extends Task {
       .parseURL('https://www.vainglorygame.com/feed/')
       .catch(() => null);
     if (!feed || !feed.items || !feed.items.length) return null;
+    const randomDefaultImage =
+      defaultImages[Math.floor(Math.random() * defaultImages.length)];
 
     const officialNews = feed.items.map((item: any) => {
-      const image = item["content:encoded"].indexOf('src="') >= 0
-        ? item["content:encoded"].substring(
-          item["content:encoded"].indexOf('src="') + 5,
-          item["content:encoded"].indexOf('alt="') - 2
-        )
-        : "https://media.giphy.com/media/2uIfi72zJRvXKZNM1R/giphy.gif";
+      const image =
+        item['content:encoded'].indexOf('src="') >= 0
+          ? item['content:encoded'].substring(
+              item['content:encoded'].indexOf('src="') + 5,
+              item['content:encoded'].indexOf('alt="') - 2
+            )
+          : randomDefaultImage;
       return {
-        author: `${item.creator.toUpperCase()} On ${item.pubDate.substring(0, item.pubDate.length - 15)}`,
-        title: item.title.toUpperCase(),
-        link: item.link,
+        author: `${item.creator.toUpperCase()} On ${item.pubDate.substring(
+          0,
+          item.pubDate.length - 15
+        )}`,
         category: 'official',
+        featured: false,
         path: '/',
+        image: image.includes('flywheelsites.com') ? randomDefaultImage : image,
+        link: item.link,
+        title: item.title.toUpperCase(),
         timestamp: Date.now(),
-        image:
-          image.includes('flywheelsites.com') ? "https://media.giphy.com/media/2uIfi72zJRvXKZNM1R/giphy.gif" : image,
-      }
+        stream: false,
+      };
     });
-
-    // https://vainglorygame.flywheelsites.com/wp-content/uploads/2019/02/SanFeng_YinYang_Splash.jpg
 
     let hasNewPost = false;
 
-    const allPostsInDB = await this.client.providers.default.get('posts', 'officialNews');
+    const allPostsInDB = await this.client.providers.default
+      .getAll('posts')
+      .catch(() => null);
+
+    const allOfficialPosts = allPostsInDB.filter(
+      (post: any) => post.category === 'official'
+    );
 
     for (const news of officialNews) {
-      const isNew = allPostsInDB.news.find((post: any) => post.title.toUpperCase() === news.title);
+      const isNew = allOfficialPosts.find(
+        (post: any) => post.title.toUpperCase() === news.title
+      );
       if (isNew) continue;
 
       hasNewPost = true;
     }
+    
     if (!hasNewPost) return null;
+    console.log('Updating db with official rss task.');
+    // Deletes all the old posts in the database
+    for (const news of allOfficialPosts)
+      await this.client.providers.default
+        .delete('posts', news.id)
+        .catch(() => null);
     // Update the database with the new data
-    console.log('updating')
-    const updated = await this.client.providers.default
-      .update('posts', 'officialNews', { news: officialNews })
-      .catch((error) => {
-        this.client.console.error(error);
-        return null;
-      });
+    for (const news of officialNews)
+      await this.client.providers.default
+        .create('posts', news.id, news)
+        .catch(() => null);
 
     // Tell netlify to rebuild the website if the db was updated
-    if (updated) await fetch(config.netlifyUpdateWebhook, { method: 'POST' });
+    await fetch(config.netlifyUpdateWebhook, { method: 'POST' });
 
     return null;
   }

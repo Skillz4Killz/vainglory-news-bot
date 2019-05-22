@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node production/src/index",
     "build": "tsc",
-    "dev": "npm run build && npm run start",
+    "develop": "npm run build && npm run start",
     "reset": "rm -R production && npm run dev",
     "clean": "rm -r -f node_modules && rm yarn.lock && yarn"
   },

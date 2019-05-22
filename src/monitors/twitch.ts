@@ -45,7 +45,7 @@ export default class extends Monitor {
       featured: false,
       stream: true,
       path: 'entertainment',
-      image: 'https://i.imgur.com/OgjCear.jpg',
+      image: '',
       link: embed.url || '',
       title: embed.title ? embed.title.substring(0, 30) : '',
       timestamp: Date.now(),
